@@ -124,6 +124,24 @@ namespace Something.Blah
             => otherFlags == 0 ? true : (value & otherFlags) != 0;
 
         /// <summary>
+        /// Determines whether any bit fields are set in the current instance.
+        /// </summary>
+        /// <param name="value">The value of the instance to investigate</param>
+        /// <returns><see langword="true"/> if the underlying value of <paramref name="value" /> is
+        /// not zero; otherwise <see langword="false"/>.</returns>
+        public static bool HasAnyFlags(this global::Something.Blah.ShortName value)
+            => value != 0;
+
+        /// <summary>
+        /// Determines whether all the bit fields of the defined members are set in the current instance.
+        /// </summary>
+        /// <param name="value">The value of the instance to investigate</param>
+        /// <returns><see langword="true"/> if all the fields set in <see cref="All" /> are
+        /// also set in <paramref name="value" />; otherwise <see langword="false"/>.</returns>
+        public static bool HasAllFlags(this global::Something.Blah.ShortName value)
+            => (value & All) == All;
+
+        /// <summary>
         /// Cast a value of <see cref="global::Something.Blah.ShortName" /> to the underlying type (<c>int</c>).
         /// This is mainly a convenience method.
         /// </summary>
@@ -147,6 +165,17 @@ namespace Something.Blah
                 global::Something.Blah.ShortName.Odd => true,
                 _ => false,
             };
+
+        /// <summary>
+        /// Returns a boolean telling whether every bit field set in the given value corresponds
+        /// to a defined member of the enumeration. Unlike <see cref="IsDefined(global::Something.Blah.ShortName)" />,
+        /// combinations of defined flags are also considered defined.
+        /// </summary>
+        /// <param name="value">The value to check</param>
+        /// <returns><see langword="true"/> if the value contains no bit fields outside <see cref="All" />,
+        /// <see langword="false"/> otherwise</returns>
+        public static bool AreFlagsDefined(global::Something.Blah.ShortName value)
+            => (value & ~All) == 0;
 
         /// <summary>
         /// Returns a boolean telling whether an enum with the given name exists in the enumeration.

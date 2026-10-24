@@ -950,8 +950,26 @@ namespace MyTestNameSpace
             => otherFlags == 0 ? true : (value & otherFlags) != 0;
 
         /// <summary>
+        /// Determines whether any bit fields are set in the current instance.
+        /// </summary>
+        /// <param name="value">The value of the instance to investigate</param>
+        /// <returns><see langword="true"/> if the underlying value of <paramref name="value" /> is
+        /// not zero; otherwise <see langword="false"/>.</returns>
+        public static bool HasAnyFlags(this global::MyTestNameSpace.AnotherEnum value)
+            => value != 0;
+
+        /// <summary>
+        /// Determines whether all the bit fields of the defined members are set in the current instance.
+        /// </summary>
+        /// <param name="value">The value of the instance to investigate</param>
+        /// <returns><see langword="true"/> if all the fields set in <see cref="All" /> are
+        /// also set in <paramref name="value" />; otherwise <see langword="false"/>.</returns>
+        public static bool HasAllFlags(this global::MyTestNameSpace.AnotherEnum value)
+            => (value & All) == All;
+
+        /// <summary>
         /// The number of distinct single-bit flag members defined in the enum.
-        /// This is the buffer size required by <see cref="TryGetFlags" />.
+        /// This is the buffer size required by <c>TryGetFlags</c>.
         /// </summary>
         public const int DistinctFlagCount = 2;
 
@@ -1008,6 +1026,17 @@ namespace MyTestNameSpace
                 global::MyTestNameSpace.AnotherEnum.Third => true,
                 _ => false,
             };
+
+        /// <summary>
+        /// Returns a boolean telling whether every bit field set in the given value corresponds
+        /// to a defined member of the enumeration. Unlike <see cref="IsDefined(global::MyTestNameSpace.AnotherEnum)" />,
+        /// combinations of defined flags are also considered defined.
+        /// </summary>
+        /// <param name="value">The value to check</param>
+        /// <returns><see langword="true"/> if the value contains no bit fields outside <see cref="All" />,
+        /// <see langword="false"/> otherwise</returns>
+        public static bool AreFlagsDefined(global::MyTestNameSpace.AnotherEnum value)
+            => (value & ~All) == 0;
 
         /// <summary>
         /// Returns a boolean telling whether an enum with the given name exists in the enumeration.

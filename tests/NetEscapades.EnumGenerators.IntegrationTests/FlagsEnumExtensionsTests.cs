@@ -186,6 +186,40 @@ public class FlagsEnumExtensionsTests : ExtensionTests<FlagsEnum, int, FlagsEnum
         value.HasAnyFlags(otherFlags).Should().Be(expected);
     }
 
+    [Theory]
+    [InlineData(FlagsEnum.None, false)]
+    [InlineData(FlagsEnum.First, true)]
+    [InlineData(FlagsEnum.ThirdAndFourth, true)]
+    [InlineData((FlagsEnum)64, true)]
+    public void HasAnyFlagsWithoutArgument(FlagsEnum value, bool expected)
+    {
+        value.HasAnyFlags().Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(FlagsEnum.None, false)]
+    [InlineData(FlagsEnum.First | FlagsEnum.Second | FlagsEnum.Third, false)]
+    [InlineData(FlagsEnum.First | FlagsEnum.Second | FlagsEnum.ThirdAndFourth, true)]
+    [InlineData((FlagsEnum)0b1_1111, true)]
+    public void HasAllFlags(FlagsEnum value, bool expected)
+    {
+        value.HasAllFlags().Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(FlagsEnum.None, true)]
+    [InlineData(FlagsEnum.First, true)]
+    [InlineData(FlagsEnum.First | FlagsEnum.Third, true)]
+    [InlineData(FlagsEnum.First | FlagsEnum.ThirdAndFourth, true)]
+    [InlineData((FlagsEnum)0b1111, true)]
+    [InlineData((FlagsEnum)16, false)]
+    [InlineData((FlagsEnum)17, false)]
+    [InlineData((FlagsEnum)(-1), false)]
+    public void AreFlagsDefined(FlagsEnum value, bool expected)
+    {
+        FlagsEnumExtensions.AreFlagsDefined(value).Should().Be(expected);
+    }
+
     [Fact]
     public void DistinctFlagCountCountsSingleBitFlags()
     {

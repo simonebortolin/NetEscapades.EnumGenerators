@@ -32,6 +32,42 @@ public class BitFlagsEnumExtensionsTests
         BitFlagsEnumExtensions.DistinctFlagCount.Should().Be(4);
     }
 
+    [Fact]
+    public void AllHasExpectedValue()
+    {
+        ((int)BitFlagsEnumExtensions.All).Should().Be(0b1111);
+    }
+
+    [Theory]
+    [InlineData(BitFlagsEnum.None, false)]
+    [InlineData(BitFlagsEnum.Fourth, true)]
+    [InlineData((BitFlagsEnum)16, true)]
+    public void HasAnyFlagsWithoutArgument(BitFlagsEnum value, bool expected)
+    {
+        value.HasAnyFlags().Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(BitFlagsEnum.None, false)]
+    [InlineData(BitFlagsEnum.First | BitFlagsEnum.Fourth, false)]
+    [InlineData(BitFlagsEnum.First | BitFlagsEnum.Second | BitFlagsEnum.Third | BitFlagsEnum.Fourth, true)]
+    [InlineData((BitFlagsEnum)0xFF, true)]
+    public void HasAllFlags(BitFlagsEnum value, bool expected)
+    {
+        value.HasAllFlags().Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(BitFlagsEnum.None, true)]
+    [InlineData(BitFlagsEnum.Second | BitFlagsEnum.Fourth, true)]
+    [InlineData(BitFlagsEnum.First | BitFlagsEnum.Second | BitFlagsEnum.Third | BitFlagsEnum.Fourth, true)]
+    [InlineData((BitFlagsEnum)16, false)]
+    [InlineData((BitFlagsEnum)0xFF, false)]
+    public void AreFlagsDefined(BitFlagsEnum value, bool expected)
+    {
+        BitFlagsEnumExtensions.AreFlagsDefined(value).Should().Be(expected);
+    }
+
 #if READONLYSPAN
     public static TheoryData<BitFlagsEnum, int, BitFlagsEnum[]> TryGetFlagsData => new()
     {

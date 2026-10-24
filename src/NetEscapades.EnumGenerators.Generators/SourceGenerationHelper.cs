@@ -119,6 +119,12 @@ public static class SourceGenerationHelper
                 sb.Append(fullyQualifiedName).Append('.').AppendIdentifier(member.Key);
             }
 
+            if (first)
+            {
+                // No members defined
+                sb.Append('0');
+            }
+
             sb.Append(';');
         }
 
@@ -594,6 +600,30 @@ public static class SourceGenerationHelper
                 """
                  otherFlags)
                             => otherFlags == 0 ? true : (value & otherFlags) != 0;
+
+                        /// <summary>
+                        /// Determines whether any bit fields are set in the current instance.
+                        /// </summary>
+                        /// <param name="value">The value of the instance to investigate</param>
+                        /// <returns><see langword="true"/> if the underlying value of <paramref name="value" /> is
+                        /// not zero; otherwise <see langword="false"/>.</returns>
+                        public static bool HasAnyFlags(this
+                """).Append(' ').Append(fullyQualifiedName).Append(
+                """
+                 value)
+                            => value != 0;
+
+                        /// <summary>
+                        /// Determines whether all the bit fields of the defined members are set in the current instance.
+                        /// </summary>
+                        /// <param name="value">The value of the instance to investigate</param>
+                        /// <returns><see langword="true"/> if all the fields set in <see cref="All" /> are
+                        /// also set in <paramref name="value" />; otherwise <see langword="false"/>.</returns>
+                        public static bool HasAllFlags(this
+                """).Append(' ').Append(fullyQualifiedName).Append(
+                """
+                 value)
+                            => (value & All) == All;
                 """);
 
             // Collect single-bit flag members (powers of two) and build a mask of all defined bits.
@@ -644,7 +674,7 @@ public static class SourceGenerationHelper
 
                             /// <summary>
                             /// The number of distinct single-bit flag members defined in the enum.
-                            /// This is the buffer size required by <see cref="TryGetFlags" />.
+                            /// This is the buffer size required by <c>TryGetFlags</c>.
                             /// </summary>
                             public const int DistinctFlagCount =
                     """).Append(' ').Append(singleBitFlags.Count).Append(';');
@@ -777,6 +807,31 @@ public static class SourceGenerationHelper
                             _ => false,
                         };
             """);
+
+        if (enumToGenerate.HasFlags)
+        {
+            sb.Append(
+                """
+
+
+                        /// <summary>
+                        /// Returns a boolean telling whether every bit field set in the given value corresponds
+                        /// to a defined member of the enumeration. Unlike <see cref="IsDefined(
+                """).Append(fullyQualifiedName).Append(
+                """
+                )" />,
+                        /// combinations of defined flags are also considered defined.
+                        /// </summary>
+                        /// <param name="value">The value to check</param>
+                        /// <returns><see langword="true"/> if the value contains no bit fields outside <see cref="All" />,
+                        /// <see langword="false"/> otherwise</returns>
+                        public static bool AreFlagsDefined(
+                """).Append(fullyQualifiedName).Append(
+                """
+                 value)
+                            => (value & ~All) == 0;
+                """);
+        }
 
         sb.Append(
             """
